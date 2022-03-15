@@ -78,17 +78,22 @@ void ShellSort(int *a, size_t size) {
 }
 
 void radixSort_(unsigned int *from, unsigned int *to, unsigned int bit) {
-    if (!bit || to < from + 1) return;
+    if (!bit || to < from + 1)
+        return;
 
     unsigned int *left = from, *right = to - 1;
     while (1) {
-        while (left < right && !(*left & bit)) left++;
-        while (left < right && (*right & bit)) right--;
-        if (left >= right) break;
+        while (left < right && !(*left & bit))
+            left++;
+        while (left < right && (*right & bit))
+            right--;
+        if (left >= right)
+            break;
         swap(left, right, sizeof(unsigned int));
     }
 
-    if (!(bit & *left) && left < to) left++;
+    if (!(bit & *left) && left < to)
+        left++;
     bit >>= 1;
 
     radixSort_(from, left, bit);
@@ -103,5 +108,67 @@ void radixSort(int *a, size_t size) {
     radixSort_(a, a + size, INT_MIN);
     for (i = 0; i < size; i++) {
         a[i] ^= INT_MIN;
+    }
+}
+
+void merge(const int *a, const size_t n,
+           const int *b, const size_t m, int *c) {
+    int i = 0, j = 0;
+    while (i < n || j < m) {
+        if (j == m || i < n && a[i] < b[j]) {
+            c[i + j] = a[i];
+            i++;
+        } else {
+            c[i + j] = b[j];
+            j++;
+        }
+    }
+}
+
+void mergeSort_(int *source, size_t l, size_t r, int *buffer) {
+    size_t n = r - l;
+    if (n <= 1)
+        return;
+
+    size_t m = (l + r) / 2;
+    mergeSort_(source, l, m, buffer);
+    mergeSort_(source, m, r, buffer);
+
+    merge(source + l, m - l, source + m, r - m, buffer);
+    memcpy(source + l, buffer, sizeof(int) * n);
+}
+
+void mergeSort(int *a, size_t n) {
+    int *buffer = (int *) malloc(sizeof(int) * n);
+    mergeSort_(a, 0, n, buffer);
+    free(buffer);
+}
+
+int isBiggerThenSwap(int *a, int i) {
+    if (a[i] > a[i + 1]) {
+        swap(&a[i], &a[i + 1], sizeof(int));
+    }
+    return 1;
+}
+
+void CocktailSort(int *a, size_t n) {
+    int swapped = 1;
+    int start = 0;
+    int end = n - 1;
+
+    while (swapped) {
+        swapped = 0;
+        for (int i = start; i < end; ++i) {
+            swapped = isBiggerThenSwap(a, i);
+        }
+        if (!swapped)
+            break;
+
+        swapped = 0;
+        --end;
+        for (int i = end - 1; i >= start; --i) {
+            swapped = isBiggerThenSwap(a, i);
+        }
+        ++start;
     }
 }

@@ -123,7 +123,7 @@ checkTime(void (*sortFunc)(int *, size_t), void (*generateFunc)(int *, size_t), 
 void timeExperiment() {
     // описание функций сортировки
     SortFunc sorts[] = {
-            {radixSort," radixSort uwu"}
+            {CocktailSort," CocktailSort uwu"}
             //{selectionSort, " selectionSort uwu"}
             //{insertionSort , " insertionSort uwu"} ,
             // вы добавите свои сортировки
