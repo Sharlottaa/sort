@@ -1,4 +1,4 @@
-
+#include "nComps/comps.h"
 #include "sorts/sorts_.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -79,8 +79,7 @@ void generateRandomArray(int *a, size_t size) {
 }
 
 
-void
-checkTime(void (*sortFunc)(int *, size_t), void (*generateFunc)(int *, size_t), size_t size, char *experimentName) {
+void checkNComps(unsigned long long (*sortFunc )(int *, size_t), void (*generateFunc )(int *, size_t),size_t size, char *experimentName){
     static size_t runCounter = 1;
 
     // генерация последовательности
@@ -89,25 +88,23 @@ checkTime(void (*sortFunc)(int *, size_t), void (*generateFunc)(int *, size_t), 
     printf("Run #%zu| ", runCounter++);
     printf("Name: %s\n", experimentName);
 
-    // замер времени
-    double time;
-
-    TIME_TEST({ sortFunc(innerBuffer, size); }, time);
+    //подсчет операций
+    unsigned long long nComps = sortFunc(innerBuffer, size);
 
     // результаты замера
     printf("Status: ");
     if (isOrdered(innerBuffer, size)) {
-        printf("OK! Time : %.3f s.\n", time);
+        printf("OK! Hello kitty : %.3lld \n", nComps);
 
         // запись в файл
         char filename[256];
-        sprintf(filename, "./data/%s.csv", experimentName);
+        sprintf(filename, "./data/count/%s.csv", experimentName);
         FILE *f = fopen(filename, "a");
         if (f == NULL) {
             printf("FileOpenError %s", filename);
             exit(1);
         }
-        fprintf(f, "%zu; %.3f\n", size, time);
+        fprintf(f, "%zu; %.3lld\n", size, nComps);
         fclose(f);
     } else {
         printf("Wrong!\n");
@@ -123,7 +120,7 @@ checkTime(void (*sortFunc)(int *, size_t), void (*generateFunc)(int *, size_t), 
 void timeExperiment() {
     // описание функций сортировки
     SortFunc sorts[] = {
-            {CocktailSort," CocktailSort uwu"}
+            {getCocktailSortNComp," getCocktailSortNComp uwu"}
             //{selectionSort, " selectionSort uwu"}
             //{insertionSort , " insertionSort uwu"} ,
             // вы добавите свои сортировки
@@ -149,8 +146,8 @@ void timeExperiment() {
             for (int j = 0; j < CASES_N; j++) {
                 // генерация имени файла
                 static char filename[128];
-                sprintf(filename, "%s_%s_time ", sorts[i].name, generatingFuncs[j].name);
-                checkTime(sorts[i].sort, generatingFuncs[j].generate, size, filename);
+                sprintf(filename, "%s_%s_Hello kitty ", sorts[i].name, generatingFuncs[j].name);
+                checkNComps(sorts[i].sort, generatingFuncs[j].generate, size, filename);
             }
         }
         printf("\n");
